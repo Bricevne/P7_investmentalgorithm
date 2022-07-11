@@ -1,6 +1,7 @@
 """Brut algorithm maximizing benefits from stocks."""
 import time
 import csv
+import itertools
 
 
 class Stock:
@@ -46,7 +47,7 @@ class StocksCombination:
             stocks_list (list[stock]): List of available stock instances
         """
         self.stocks = stocks_list
-        self.combinations = self.get_combinations()
+        self.combinations = self.get_combinations(len(self.stocks))
         self.best_combination = self.get_best_combination()
 
     @staticmethod
@@ -79,24 +80,15 @@ class StocksCombination:
             profit += stock.profit
         return profit
 
-    def get_combinations(self) -> tuple[list[Stock], int]:
-        """Get all possible combinations.
+    def get_combinations(self, number, all_combinations=[]):
+        """This is a recursive function
+        to find the factorial of an integer"""
 
-        Returns:
-            tuple[list[Stock], int]: A tuple with all stocks in a list, and a total profit.
-        """
-        all_combinations = []
-        for stock in self.stocks:
-            combination = [stock]
-            for other_stock in self.stocks:
-                if (
-                    other_stock != stock
-                    and (self.get_total_price(combination) + other_stock.price) < 500
-                ):
-                    combination.append(other_stock)
-
-            all_combinations.append((combination, self.get_total_profit(combination)))
-        return all_combinations
+        if number == 0:
+            return all_combinations
+        else:
+            all_combinations.append(list(itertools.combinations(self.stocks, number)))
+            return self.get_combinations(number - 1, all_combinations)
 
     def get_best_combination(self) -> tuple[list[Stock], int]:
         """Get the best combination out of all combinations.
@@ -106,11 +98,16 @@ class StocksCombination:
         """
         best_combination_profit = 0
         best_combination = ()
-        for combination in self.combinations:
-            if combination[1] > best_combination_profit:
-                best_combination = combination
-                best_combination_profit = combination[1]
-        return best_combination
+        for length in self.combinations:
+            for combination in length:
+                profit = self.get_total_profit(combination)
+                if (
+                    profit > best_combination_profit
+                    and self.get_total_price(combination) < 500
+                ):
+                    best_combination = combination
+                    best_combination_profit = profit
+        return best_combination, best_combination_profit
 
 
 def main():
@@ -132,9 +129,12 @@ def main():
 
     for stock in combination.best_combination[0]:
         print(stock)
-    print(f"Total profit : {combination.best_combination[1]}")
+    print(f"Total profit : {combination.best_combination[1]} euros")
+    print(
+        f"Total price : {combination.get_total_price(combination.best_combination[0])} euros"
+    )
 
-    print(time.time() - start_time)
+    print(f"Total time : {time.time() - start_time} s")
 
 
 if __name__ == "__main__":
