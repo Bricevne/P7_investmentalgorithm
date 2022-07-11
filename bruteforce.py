@@ -46,24 +46,46 @@ class StocksCombination:
             stocks_list (list[stock]): List of available stock instances
         """
         self.stocks = stocks_list
-        self.combinations = []
-        self.best_combination = ()
+        self.combinations = self.get_combinations()
+        self.best_combination = self.get_best_combination()
 
     @staticmethod
-    def get_total_price(stocks_list):
+    def get_total_price(stocks_list: list[Stock]) -> int:
+        """Get total price of all stocks in the list.
+
+        Args:
+            stocks_list (list[Stock]): A list of stocks
+
+        Returns:
+            int: Total price
+        """
         price = 0
         for stock in stocks_list:
             price += stock.price
         return price
 
     @staticmethod
-    def get_total_profit(combination):
+    def get_total_profit(combination: list[Stock]) -> int:
+        """Get total profit of all stocks in the list.
+
+        Args:
+            combination (list[Stock]): A list of stocks
+
+        Returns:
+            int: Total profit
+        """
         profit = 0
         for stock in combination:
             profit += stock.profit
         return profit
 
-    def get_combinations(self):
+    def get_combinations(self) -> tuple[list[Stock], int]:
+        """Get all possible combinations.
+
+        Returns:
+            tuple[list[Stock], int]: A tuple with all stocks in a list, and a total profit.
+        """
+        all_combinations = []
         for stock in self.stocks:
             combination = [stock]
             for other_stock in self.stocks:
@@ -73,34 +95,43 @@ class StocksCombination:
                 ):
                     combination.append(other_stock)
 
-            self.combinations.append((combination, self.get_total_profit(combination)))
+            all_combinations.append((combination, self.get_total_profit(combination)))
+        return all_combinations
 
-    def get_best_combination(self):
+    def get_best_combination(self) -> tuple[list[Stock], int]:
+        """Get the best combination out of all combinations.
+
+        Returns:
+            tuple[list[Stock], int]: A tuple with all stocks in a list, and a total profit, for the best combination
+        """
         best_combination_profit = 0
         best_combination = ()
         for combination in self.combinations:
             if combination[1] > best_combination_profit:
                 best_combination = combination
                 best_combination_profit = combination[1]
-        self.best_combination = best_combination
+        return best_combination
 
 
-filename = "dataset1.csv"
+def main():
+    """Run main program."""
+    filename = "dataset1.csv"
 
-stocks_list = []
-line = 0
-with open(filename, "r") as csvfile:
-    datareader = csv.reader(csvfile)
-    for row in datareader:
-        if line == 0:
-            line += 1
-            continue
-        stocks_list.append(Stock(row[0], float(row[1]), float(row[2])))
-    combination = StocksCombination(stocks_list)
+    stocks_list = []
+    line = 0
+    with open(filename, "r") as csvfile:
+        datareader = csv.reader(csvfile)
+        for row in datareader:
+            if line == 0:
+                line += 1
+                continue
+            stocks_list.append(Stock(row[0], float(row[1]), float(row[2])))
+        combination = StocksCombination(stocks_list)
 
-combination.get_combinations()
-combination.get_best_combination()
+    for stock in combination.best_combination[0]:
+        print(stock)
+    print(f"Total profit : {combination.best_combination[1]}")
 
-for stock in combination.best_combination[0]:
-    print(stock)
-print(f"Total profit : {combination.best_combination[1]}")
+
+if __name__ == "__main__":
+    main()
