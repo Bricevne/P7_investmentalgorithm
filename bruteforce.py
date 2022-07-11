@@ -1,5 +1,5 @@
 """Brut algorithm maximizing benefits from stocks."""
-
+import time
 import csv
 
 
@@ -115,6 +115,8 @@ class StocksCombination:
 
 def main():
     """Run main program."""
+    start_time = time.time()
+
     filename = "dataset1.csv"
 
     stocks_list = []
@@ -131,6 +133,8 @@ def main():
     for stock in combination.best_combination[0]:
         print(stock)
     print(f"Total profit : {combination.best_combination[1]}")
+
+    print(time.time() - start_time)
 
 
 if __name__ == "__main__":
