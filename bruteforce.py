@@ -80,10 +80,16 @@ class StocksCombination:
             profit += stock.profit
         return profit
 
-    def get_combinations(self, number, all_combinations=[]):
-        """This is a recursive function
-        to find the factorial of an integer"""
+    def get_combinations(self, number: int, all_combinations=[]) -> list:
+        """Get all possible combinations of stocks.
 
+        Args:
+            number (int): Number of stocks in a combination
+            all_combinations (list, optional): List of combinations. Defaults to [].
+
+        Returns:
+            list: List of all combinations
+        """
         if number == 0:
             return all_combinations
         else:
@@ -109,31 +115,33 @@ class StocksCombination:
                     best_combination_profit = profit
         return best_combination, best_combination_profit
 
+    def display_best_combination(self) -> None:
+        """Display best combinations of stocks."""
+        for stock in self.best_combination[0]:
+            print(stock)
+        print(
+            f"Total profit : {self.best_combination[1]} euros\
+            \nTotal price : {self.get_total_price(self.best_combination[0])} euros"
+        )
+
 
 def main():
     """Run main program."""
     start_time = time.time()
 
-    filename = "dataset1.csv"
-
+    file_name = "dataset1.csv"
     stocks_list = []
     line = 0
-    with open(filename, "r") as csvfile:
-        datareader = csv.reader(csvfile)
-        for row in datareader:
+    with open(file_name, "r") as csv_file:
+        data_reader = csv.reader(csv_file)
+        for row in data_reader:
             if line == 0:
                 line += 1
                 continue
             stocks_list.append(Stock(row[0], float(row[1]), float(row[2])))
         combination = StocksCombination(stocks_list)
 
-    for stock in combination.best_combination[0]:
-        print(stock)
-    print(f"Total profit : {combination.best_combination[1]} euros")
-    print(
-        f"Total price : {combination.get_total_price(combination.best_combination[0])} euros"
-    )
-
+    combination.display_best_combination()
     print(f"Total time : {time.time() - start_time} s")
 
 
