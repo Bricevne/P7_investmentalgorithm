@@ -121,7 +121,7 @@ class StocksCombination:
             print(stock)
         print(
             f"Total profit : {self.best_combination[1]} euros\
-            \nTotal price : {self.get_total_price(self.best_combination[0])} euros"
+            \nTotal cost : {self.get_total_price(self.best_combination[0])} euros"
         )
 
 
@@ -142,6 +142,7 @@ def main():
         combination = StocksCombination(stocks_list)
 
     combination.display_best_combination()
+
     print(f"Total time : {time.time() - start_time} s")
 
 
