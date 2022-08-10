@@ -2,6 +2,7 @@
 import time
 import csv
 import itertools
+import tracemalloc
 
 
 class Stock:
@@ -128,7 +129,7 @@ class StocksCombination:
 def main():
     """Run main program."""
     start_time = time.time()
-
+    tracemalloc.start()
     file_name = "dataset1.csv"
     stocks_list = []
     line = 0
@@ -142,6 +143,7 @@ def main():
         combination = StocksCombination(stocks_list)
 
     combination.display_best_combination()
+    print(tracemalloc.get_tracemalloc_memory())
 
     print(f"Total time : {time.time() - start_time} s")
 
