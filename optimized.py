@@ -3,6 +3,9 @@ import time
 import csv
 import tracemalloc
 
+DATA_PATH = "dataset3.csv"
+WALLET = 500
+
 
 class Stock:
     """Class representing financial stocks."""
@@ -20,7 +23,7 @@ class Stock:
         self.percentage_benefit = percentage_benefit
         self.profit = self.calculate_profit()
         self.weigth = self.calculate_weigth()
-        self.value = self.weigth * self.profit
+        self.return_value = self.profit - self.price
 
     def __str__(self) -> str:
         """Represent an action.
@@ -28,7 +31,7 @@ class Stock:
         Returns:
             str: Stock's name
         """
-        return f"{self.name} - Profit {self.profit}"
+        return f"{self.name} - Profit {self.profit} - Price {self.price}"
 
     def calculate_profit(self) -> int:
         """Calculate benefit after two years of investment.
@@ -56,8 +59,11 @@ class StocksCombination:
         Args:
             stocks_list (list[stock]): List of available stock instances
         """
-        self.stocks = sorted(stocks_list, key=lambda stock: stock.value, reverse=True)
-        self.combinations = self.get_combinations()
+        self.stocks = sorted(
+            stocks_list, key=lambda stock: stock.percentage_benefit, reverse=True
+        )
+        self.combination = self.get_combination()
+        self.total_price = self.get_total_price(self.combination)
 
     @staticmethod
     def get_total_price(stocks_list: list[Stock]) -> int:
@@ -89,7 +95,7 @@ class StocksCombination:
             profit += stock.profit
         return profit
 
-    def get_combinations(self) -> list:
+    def get_combination(self) -> list:
         """Get all possible combinations of stocks.
 
         Args:
@@ -100,22 +106,34 @@ class StocksCombination:
             list: List of all combinations
         """
         total_price = 0
-        combination = []
-        for i in self.stocks:
-            if total_price + i.price <= 500 and i.price > 0:
-                combination.append(i)
-                total_price += i.price
-        return combination, total_price
+        first_combination = []
+        for stock in self.stocks:
+            if total_price + stock.price <= WALLET and stock.price > 0:
+                first_combination.append(stock)
+                total_price += stock.price
+
+        return first_combination
 
     def display_best_combination(self) -> None:
         """Display best combinations of stocks."""
-        for stock in self.combinations[0]:
+        for stock in self.combination:
             print(stock)
         print(
-            f"Total profit : {self.get_total_profit(self.combinations[0])} euros\
-            \nTotal price : {self.combinations[1]} euros\
-            \nTotal return : {self.get_total_profit(self.combinations[0]) - self.combinations[1]} euros"
+            f"Total profit : {self.get_total_profit(self.combination)} euros\
+            \nTotal price : {self.total_price} euros\
+            \nTotal return : {self.get_total_profit(self.combination) - self.total_price} euros"
         )
+
+
+def read_data(path: str):
+    stocks_list = []
+
+    with open(path, "r") as csv_file:
+        data_reader = csv.reader(csv_file)
+        next(data_reader)
+        for row in data_reader:
+            stocks_list.append(Stock(row[0], float(row[1]), float(row[2])))
+        return stocks_list
 
 
 def main():
@@ -123,17 +141,10 @@ def main():
     start_time = time.time()
     tracemalloc.start()
 
-    file_name = "dataset3.csv"
-    stocks_list = []
+    stocks_list = read_data(DATA_PATH)
+    combination = StocksCombination(stocks_list)
+    combination.display_best_combination()
 
-    with open(file_name, "r") as csv_file:
-        data_reader = csv.reader(csv_file)
-        next(data_reader)
-        for row in data_reader:
-            stocks_list.append(Stock(row[0], float(row[1]), float(row[2])))
-        combinations = StocksCombination(stocks_list)
-
-    combinations.display_best_combination()
     print(tracemalloc.get_tracemalloc_memory())
     print(f"Total time : {time.time() - start_time} s")
 
