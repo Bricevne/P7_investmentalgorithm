@@ -3,7 +3,7 @@ import time
 import csv
 import tracemalloc
 
-DATA_PATH = "dataset3.csv"
+DATA_PATH = "dataset1.csv"
 WALLET = 500
 
 
@@ -125,7 +125,15 @@ class StocksCombination:
         )
 
 
-def read_data(path: str):
+def get_data(path: str) -> list:
+    """Read data from a csv file and return a list of Stock objects.
+
+    Args:
+        path (str): Path to the csv file
+
+    Returns:
+        list: list of Stock objects
+    """
     stocks_list = []
 
     with open(path, "r") as csv_file:
@@ -141,7 +149,7 @@ def main():
     start_time = time.time()
     tracemalloc.start()
 
-    stocks_list = read_data(DATA_PATH)
+    stocks_list = get_data(DATA_PATH)
     combination = StocksCombination(stocks_list)
     combination.display_best_combination()
 

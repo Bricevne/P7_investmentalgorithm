@@ -4,6 +4,9 @@ import csv
 import itertools
 import tracemalloc
 
+DATA_PATH = "dataset1.csv"
+WALLET = 500
+
 
 class Stock:
     """Class representing financial stocks."""
@@ -110,7 +113,7 @@ class StocksCombination:
                 profit = self.get_total_profit(combination)
                 if (
                     profit > best_combination_profit
-                    and self.get_total_price(combination) < 500
+                    and self.get_total_price(combination) <= WALLET
                 ):
                     best_combination = combination
                     best_combination_profit = profit
@@ -122,29 +125,40 @@ class StocksCombination:
             print(stock)
         print(
             f"Total profit : {self.best_combination[1]} euros\
-            \nTotal cost : {self.get_total_price(self.best_combination[0])} euros"
+            \nTotal cost : {self.get_total_price(self.best_combination[0])} euros\
+            \nTotal return : {self.best_combination[1] - self.get_total_price(self.best_combination[0])} euros"
         )
+
+
+def get_data(path: str) -> list:
+    """Read data from a csv file and return a list of Stock objects.
+
+    Args:
+        path (str): Path to the csv file
+
+    Returns:
+        list: list of Stock objects
+    """
+    stocks_list = []
+
+    with open(path, "r") as csv_file:
+        data_reader = csv.reader(csv_file)
+        next(data_reader)
+        for row in data_reader:
+            stocks_list.append(Stock(row[0], float(row[1]), float(row[2])))
+        return stocks_list
 
 
 def main():
     """Run main program."""
     start_time = time.time()
     tracemalloc.start()
-    file_name = "dataset1.csv"
-    stocks_list = []
-    line = 0
-    with open(file_name, "r") as csv_file:
-        data_reader = csv.reader(csv_file)
-        for row in data_reader:
-            if line == 0:
-                line += 1
-                continue
-            stocks_list.append(Stock(row[0], float(row[1]), float(row[2])))
-        combination = StocksCombination(stocks_list)
 
+    stocks_list = get_data(DATA_PATH)
+    combination = StocksCombination(stocks_list)
     combination.display_best_combination()
-    print(tracemalloc.get_tracemalloc_memory())
 
+    print(tracemalloc.get_tracemalloc_memory())
     print(f"Total time : {time.time() - start_time} s")
 
 
