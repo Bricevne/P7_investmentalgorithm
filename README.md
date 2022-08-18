@@ -25,16 +25,15 @@ Install the necessary libraries in the virtual environnement:
 
 ## Usage
 
-### bruteforce.py :
+### 1. bruteforce.py :
 
 This program checks every possible combination of stocks from the "dataset1.csv" file in order to obtain the combination with the best profitability.
-
 
 Run the code :
 
 `python3 bruteforce.py`
 
-### optimized.py :
+### 2. optimized.py :
 
 This program uses a greedy algorithm in order to solve a knapsack like problem efficiently. Only one combination is obtained.
 2 csv files are used for Sienna's files:
