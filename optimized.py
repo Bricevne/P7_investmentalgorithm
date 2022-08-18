@@ -1,9 +1,9 @@
-"""Brut algorithm maximizing benefits from stocks."""
+"""Optimized algorithm maximizing benefits from stocks."""
 import time
 import csv
 import tracemalloc
 
-DATA_PATH = "dataset1.csv"
+DATA_PATH = "./data/sienna1.csv"
 WALLET = 500
 
 

@@ -4,7 +4,7 @@ import csv
 import itertools
 import tracemalloc
 
-DATA_PATH = "dataset1.csv"
+DATA_PATH = "./data/bruteforce.csv"
 WALLET = 500
 
 
