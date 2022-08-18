@@ -1,8 +1,7 @@
 """Brut algorithm maximizing benefits from stocks."""
-import time
 import csv
 import itertools
-import tracemalloc
+from textwrap import dedent
 
 DATA_PATH = "./data/bruteforce.csv"
 WALLET = 500
@@ -16,7 +15,7 @@ class Stock:
 
         Args:
             name (str): Name of a stock
-            cost (float): Cost of a stock
+            price (float): Price of a stock
             percentage_benefit (float): Benefit in percentage after 2 years of investment
         """
         self.name = name
@@ -25,7 +24,7 @@ class Stock:
         self.profit = self.calculate_profit()
 
     def __str__(self) -> str:
-        """Represent an action.
+        """Represent a stock.
 
         Returns:
             str: Stock's name
@@ -33,7 +32,7 @@ class Stock:
         return f"{self.name} - Profit {self.profit}"
 
     def calculate_profit(self) -> int:
-        """Calculate benefit after two years of investment.
+        """Calculate profit after two years of investment.
 
         Returns:
             int: Money received
@@ -41,8 +40,8 @@ class Stock:
         return self.price + self.price * (self.percentage_benefit / 100)
 
 
-class StocksCombination:
-    """Class representing a combination of stocks."""
+class StocksCombinations:
+    """Class representing combinations from a list of stocks."""
 
     def __init__(self, stocks_list: list[Stock]):
         """Initialize combinations instances.
@@ -51,7 +50,7 @@ class StocksCombination:
             stocks_list (list[stock]): List of available stock instances
         """
         self.stocks = stocks_list
-        self.combinations = self.get_combinations(len(self.stocks))
+        self.combinations = self.get_all_combinations(len(self.stocks))
         self.best_combination = self.get_best_combination()
 
     @staticmethod
@@ -84,49 +83,58 @@ class StocksCombination:
             profit += stock.profit
         return profit
 
-    def get_combinations(self, number: int, all_combinations=[]) -> list:
+    def get_all_combinations(
+        self, number_of_stocks: int, all_combinations=[]
+    ) -> list[list]:
         """Get all possible combinations of stocks.
 
         Args:
-            number (int): Number of stocks in a combination
+            number_of_stocks (int): Number of stocks in a combination
             all_combinations (list, optional): List of combinations. Defaults to [].
 
         Returns:
-            list: List of all combinations
+            list[list]: List of all combinations
         """
-        if number == 0:
+        if number_of_stocks == 0:
             return all_combinations
         else:
-            all_combinations.append(list(itertools.combinations(self.stocks, number)))
-            return self.get_combinations(number - 1, all_combinations)
+            all_combinations.append(
+                list(itertools.combinations(self.stocks, number_of_stocks))
+            )
+            return self.get_all_combinations(number_of_stocks - 1, all_combinations)
 
-    def get_best_combination(self) -> tuple[list[Stock], int]:
-        """Get the best combination out of all combinations.
+    def get_best_combination(self) -> tuple[list[Stock]]:
+        """Get the best combination in terms of profit out of all combinations.
 
         Returns:
-            tuple[list[Stock], int]: A tuple with all stocks in a list, and a total profit, for the best combination
+            tuple[list[Stock]]: A tuple with all stocks in a list, for the best combination
         """
         best_combination_profit = 0
         best_combination = ()
-        for length in self.combinations:
-            for combination in length:
+        for combination_list in self.combinations:
+            for combination in combination_list:
                 profit = self.get_total_profit(combination)
-                if (
-                    profit > best_combination_profit
-                    and self.get_total_price(combination) <= WALLET
-                ):
+                price = self.get_total_price(combination)
+                if profit > best_combination_profit and price <= WALLET:
                     best_combination = combination
                     best_combination_profit = profit
-        return best_combination, best_combination_profit
+        return best_combination
 
     def display_best_combination(self) -> None:
         """Display best combinations of stocks."""
-        for stock in self.best_combination[0]:
+        print("Stocks to purchase :\n")
+        for stock in self.best_combination:
             print(stock)
+        profit = round(self.get_total_profit(self.best_combination), 2)
+        price = round(self.get_total_price(self.best_combination), 2)
         print(
-            f"Total profit : {self.best_combination[1]} euros\
-            \nTotal cost : {self.get_total_price(self.best_combination[0])} euros\
-            \nTotal return : {self.best_combination[1] - self.get_total_price(self.best_combination[0])} euros"
+            dedent(
+                f"""
+                Total profit : {profit} euros
+                Total cost : {price} euros
+                Total return : {round(profit - price, 2)} euros
+                """
+            )
         )
 
 
@@ -140,7 +148,6 @@ def get_data(path: str) -> list:
         list: list of Stock objects
     """
     stocks_list = []
-
     with open(path, "r") as csv_file:
         data_reader = csv.reader(csv_file)
         next(data_reader)
@@ -151,15 +158,9 @@ def get_data(path: str) -> list:
 
 def main():
     """Run main program."""
-    start_time = time.time()
-    tracemalloc.start()
-
     stocks_list = get_data(DATA_PATH)
-    combination = StocksCombination(stocks_list)
+    combination = StocksCombinations(stocks_list)
     combination.display_best_combination()
-
-    print(tracemalloc.get_tracemalloc_memory())
-    print(f"Total time : {time.time() - start_time} s")
 
 
 if __name__ == "__main__":
