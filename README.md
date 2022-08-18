@@ -1,7 +1,6 @@
 # Solve problems using algorithms in Python - Openclassrooms project 7
 
-This project offers a chess tournament software capable of managing events offline.
-It must be able to manage tournaments, players, matchs, rounds and summurize them in tournament reports.
+This project is about optimizing investment strategies in order to clients' profits through algorithms
 
 ## Installation
 
@@ -26,7 +25,7 @@ Install the necessary libraries in the virtual environnement:
 
 ## Usage
 
-1. bruteforce.py :
+### bruteforce.py :
 
 This program checks every possible combination of stocks from the "dataset1.csv" file in order to obtain the combination with the best profitability.
 
@@ -35,7 +34,7 @@ Run the code :
 
 `python3 bruteforce.py`
 
-2. optimized.py :
+### optimized.py :
 
 This program uses a greedy algorithm in order to solve a knapsack like problem efficiently. Only one combination is obtained.
 2 csv files are used for Sienna's files:
