@@ -2,7 +2,7 @@
 import csv
 from textwrap import dedent
 
-DATA_PATH = "./data/sienna1.csv"
+DATA_PATH = "./data/sienna2.csv"
 WALLET = 500
 
 
@@ -84,7 +84,7 @@ class StocksCombination:
         return profit
 
     def get_combination(self) -> list:
-        """Get all possible combinations of stocks with a greedy algorithm.
+        """Get best combination of stocks with a greedy algorithm.
 
         Returns:
             list: List of stocks
